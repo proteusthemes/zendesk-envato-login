@@ -8,5 +8,8 @@
             "email": "primoz@proteusnet.com"
         }
     ],
-    "require": {}
+    "require": {
+        "firebase/php-jwt": "^3.0",
+        "guzzlehttp/guzzle": "^6.1"
+    }
 }
