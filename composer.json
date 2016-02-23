@@ -1,0 +1,12 @@
+{
+    "name": "proteusthemes/zendesk-meets-envato",
+    "description": "JWT SSO app that allows Envato users login to Zendesk with Envato account. And some other benefits.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Primoz Cigler",
+            "email": "primoz@proteusnet.com"
+        }
+    ],
+    "require": {}
+}
