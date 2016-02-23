@@ -5,13 +5,16 @@ require 'vendor/autoload.php';
 use \Firebase\JWT\JWT;
 use \GuzzleHttp\Client;
 
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 /**
  * Config, this will go to .env
  */
 $config = [
-	'envato_client_id'     => '',
-	'envato_redirect_uri'  => '',
-	'envato_client_secret' => '',
+	'envato_client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
+	'envato_redirect_uri'  => getenv( 'ENVATO_REDIRECT_URI' ),
+	'envato_client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
 ];
 
 
