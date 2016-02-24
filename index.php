@@ -12,7 +12,7 @@ $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
 /**
- * Config, this will go to .env
+ * Config, from .env
  */
 $config = [
 	'envato_client_id'      => getenv( 'ENVATO_CLIENT_ID' ),
