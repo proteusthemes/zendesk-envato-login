@@ -1,5 +1,8 @@
 <?php
 
+// sesstion needed for storing variables between redirects and user authorization
+session_start();
+
 require 'vendor/autoload.php';
 
 use \Firebase\JWT\JWT;
@@ -30,14 +33,20 @@ $envato_api = new Client( [
 	'base_uri' => 'https://api.envato.com/v1/market'
 ] );
 
-if ( ! isset( $_GET['code'] ) ) {
+$envato_code = filter_input( INPUT_GET, 'code' );
+
+if ( empty( $envato_code ) ) {
+	$_SESSION['zendesk_return_to'] = filter_input( INPUT_GET, 'return_to' );
+
 	header( sprintf( 'Location: https://api.envato.com/authorization?response_type=code&client_id=%s&redirect_uri=%s', $config['envato_client_id'], urlencode( $config['envato_redirect_uri'] ) ) );
+
+	exit;
 }
 else {
 	$response = $envato_api->post( 'https://api.envato.com/token', [
 		'form_params'   => [
 			'grant_type'    => 'authorization_code',
-			'code'          => $_GET['code'],
+			'code'          => $envato_code,
 			'client_id'     => $config['envato_client_id'],
 			'client_secret' => $config['envato_client_secret'],
 		],
@@ -64,12 +73,12 @@ else {
 
 	echo '<pre>'; var_dump( $user ); echo '</pre>';
 
+
 	/**
 	 * See https://github.com/zendesk/zendesk_jwt_sso_examples/blob/master/php_jwt.php
 	 */
 
 	$key       = $config['zendesk_shared_secret'];
-	$subdomain = $config['zendesk_subdomain'];
 	$now       = time();
 	$token = [
 		'jti'   => md5( $now . mt_rand() ),
@@ -79,13 +88,13 @@ else {
 	];
 
 	$jwt = JWT::encode( $token, $key );
-	$location = 'https://' . $subdomain . '.zendesk.com/access/jwt?jwt=' . $jwt;
+	$location = sprintf( 'https://%s.zendesk.com/access/jwt?jwt=%s', $config['zendesk_subdomain'], $jwt );
+
+	if( ! empty( $_SESSION['zendesk_return_to'] ) ) {
+		$location .= sprintf( '&return_to=%s', urlencode( $_SESSION['zendesk_return_to'] ) );
+	}
 
 	echo '<pre>'; var_dump( $location ); echo '</pre>';
-
-	if(isset($_GET['return_to'])) {
-		$location .= '&return_to=' . urlencode($_GET['return_to']);
-	}
 
 	// Redirect
 	// header("Location: " . $location);
