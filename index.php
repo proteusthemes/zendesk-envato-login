@@ -12,9 +12,11 @@ $dotenv->load();
  * Config, this will go to .env
  */
 $config = [
-	'envato_client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
-	'envato_redirect_uri'  => getenv( 'ENVATO_REDIRECT_URI' ),
-	'envato_client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
+	'envato_client_id'      => getenv( 'ENVATO_CLIENT_ID' ),
+	'envato_redirect_uri'   => getenv( 'ENVATO_REDIRECT_URI' ),
+	'envato_client_secret'  => getenv( 'ENVATO_CLIENT_SECRET' ),
+	'zendesk_shared_secret' => getenv( 'ZENDESK_SHARED_SECRET' ),
+	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
 ];
 
 
@@ -51,18 +53,29 @@ else {
 
 	$user = json_decode( $user->getBody()->getContents() );
 
+	$mail = $envato_api->get( 'https://api.envato.com/v1/market/private/user/email.json', [
+		'headers'   => [
+			'Authorization' => sprintf( 'Bearer %s', $envato_credentials->access_token ),
+		],
+	] );
+
+	$mail = json_decode( $mail->getBody()->getContents() );
+	$mail = $mail->email;
+
+	echo '<pre>'; var_dump( $user ); echo '</pre>';
+
 	/**
 	 * See https://github.com/zendesk/zendesk_jwt_sso_examples/blob/master/php_jwt.php
 	 */
 
-	$key       = '{my zendesk shared key}';
-	$subdomain = '{my zendesk subdomain}';
+	$key       = $config['zendesk_shared_secret'];
+	$subdomain = $config['zendesk_subdomain'];
 	$now       = time();
 	$token = [
-		'jti'   => md5( $now . rand() ),
+		'jti'   => md5( $now . mt_rand() ),
 		'iat'   => $now,
-		'name'  => sprintf( '%s %s', $user->firstname, $user->surname ),
-		'email' => 'ana.novak@gmail.com'
+		'name'  => sprintf( '%s %s', $user->account->firstname, $user->account->surname ),
+		'email' => $mail,
 	];
 
 	$jwt = JWT::encode( $token, $key );
