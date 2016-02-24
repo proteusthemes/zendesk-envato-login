@@ -61,7 +61,7 @@ else {
 
 	$envato_credentials = json_decode( $response->getBody()->getContents() );
 
-	$user = $envato_api->get( 'https://api.envato.com/v1/market/private/user/account.json', [
+	$user = $envato_api->get( '/private/user/account.json', [
 		'headers'   => [
 			'Authorization' => sprintf( 'Bearer %s', $envato_credentials->access_token ),
 		],
@@ -69,7 +69,7 @@ else {
 
 	$user = json_decode( $user->getBody()->getContents() );
 
-	$mail = $envato_api->get( 'https://api.envato.com/v1/market/private/user/email.json', [
+	$mail = $envato_api->get( '/private/user/email.json', [
 		'headers'   => [
 			'Authorization' => sprintf( 'Bearer %s', $envato_credentials->access_token ),
 		],
