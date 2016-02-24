@@ -10,6 +10,13 @@ use \GuzzleHttp\Client;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
+$dotenv->required( [
+	'ENVATO_CLIENT_ID',
+	'ENVATO_REDIRECT_URI',
+	'ENVATO_CLIENT_SECRET',
+	'ZENDESK_SHARED_SECRET',
+	'ZENDESK_SUBDOMAIN',
+] );
 
 /**
  * Config, from .env
