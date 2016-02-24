@@ -71,8 +71,6 @@ else {
 	$mail = json_decode( $mail->getBody()->getContents() );
 	$mail = $mail->email;
 
-	echo '<pre>'; var_dump( $user ); echo '</pre>';
-
 
 	/**
 	 * See https://github.com/zendesk/zendesk_jwt_sso_examples/blob/master/php_jwt.php
@@ -94,8 +92,7 @@ else {
 		$location .= sprintf( '&return_to=%s', urlencode( $_SESSION['zendesk_return_to'] ) );
 	}
 
-	echo '<pre>'; var_dump( $location ); echo '</pre>';
-
 	// Redirect
-	// header("Location: " . $location);
+	header( 'Location: ' . $location );
+	exit;
 }
