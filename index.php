@@ -55,7 +55,7 @@ else {
 		'iat'         => $now,
 		'name'        => $EnvatoApi->get_name(),
 		'email'       => $EnvatoApi->get_email(),
-		'user_fields' => json_encode( ['bought_themes' => json_encode( $EnvatoApi->bought_themes() ) ] ),
+		'user_fields' => json_encode( ['bought_themes' => json_encode( $EnvatoApi->get_bought_items() ) ] ),
 	];
 
 	$jwt = JWT::encode( $token, $key );
@@ -69,5 +69,8 @@ else {
 	if ( 'true' !== getenv( 'ZEL_DEBUG' ) ) {
 		header( 'Location: ' . $location );
 		exit;
+	}
+	else {
+		print_r( $token );
 	}
 }
