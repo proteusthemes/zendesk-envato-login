@@ -4,9 +4,13 @@ require_once "../vendor/autoload.php";
 require_once "../src/EnvatoApi.php";
 
 class EnvatoApiTest extends PHPUnit_Framework_TestCase {
-	public function testIsAuthorized() {
-		$EnvatoApi = new EnvatoApi();
+	protected $EnvatoApi;
 
-		$this->assertFalse( $EnvatoApi->is_authorized() );
+	protected function setUp() {
+		$this->EnvatoApi = new EnvatoApi();
+	}
+
+	public function testIsAuthorized() {
+		$this->assertFalse( $this->EnvatoApi->is_authorized() );
 	}
 }
