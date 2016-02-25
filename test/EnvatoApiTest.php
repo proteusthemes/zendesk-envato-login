@@ -12,5 +12,9 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 
 	public function testIsAuthorized() {
 		$this->assertFalse( $this->EnvatoApi->is_authorized() );
+
+		$this->EnvatoApi->authorize();
+
+		$this->assertTrue( $this->EnvatoApi->is_authorized() );
 	}
 }
