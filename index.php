@@ -3,7 +3,8 @@
 // sesstion needed for storing variables between redirects and user authorization
 session_start();
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
+require_once 'src/EnvatoApi.php';
 
 use \Firebase\JWT\JWT;
 use \GuzzleHttp\Client;
@@ -39,6 +40,8 @@ $config = [
 $envato_api = new Client( [
 	'base_uri' => 'https://api.envato.com/v1/market'
 ] );
+
+$EnvatoApi = new EnvatoWrapper();
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 
