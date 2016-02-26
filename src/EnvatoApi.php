@@ -118,6 +118,7 @@ class EnvatoApi  {
 	public function get_bought_items_string() {
 		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
 			$out .= $item['short_name'] . "\n";
+			return $out;
 		}, '' );
 	}
 }
