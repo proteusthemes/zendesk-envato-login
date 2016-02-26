@@ -55,8 +55,10 @@ else {
 		'iat'         => $now,
 		'name'        => $EnvatoApi->get_name(),
 		'email'       => $EnvatoApi->get_email(),
-		// 'user_fields' => json_encode( ['bought_themes' => json_encode( $EnvatoApi->get_bought_items() ) ] ),
-		'user_fields' => [ 'bought_themes' => $EnvatoApi->get_bought_items_string() ],
+		'user_fields' => [
+			'bought_themes'    => $EnvatoApi->get_bought_items_string(),
+			'supported_themes' => $EnvatoApi->get_supported_items_string(),
+		],
 	];
 
 	$jwt = JWT::encode( $token, $key );

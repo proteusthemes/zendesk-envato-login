@@ -18,6 +18,12 @@ class EnvatoApi  {
 	 */
 	protected $access_token = '';
 
+	/**
+	 * Array of cached data
+	 * @var array
+	 */
+	protected $cached_data = [];
+
 	public function __construct() {
 		$this->client = new Client( [
 			'base_uri' => 'https://api.envato.com/v1/market/'
@@ -92,32 +98,49 @@ class EnvatoApi  {
 	}
 
 	public function get_bought_items() {
-		$response = $this->client->get( 'https://api.envato.com/v3/market/buyer/purchases', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
-
-		$out = [];
-
-		foreach ( $response->purchases as $key => $purchase ) {
-			$out[] = [
-				'id'              => $purchase->item->id,
-				'name'            => $purchase->item->name,
-				'short_name'      => current( explode( ' ', $purchase->item->name ) ),
-				'supported_until' => $purchase->supported_until,
-				'sold_at'         => $purchase->sold_at,
-				'code'            => $purchase->code,
-			];
+		if ( array_key_exists( 'bought_items', $this->cached_data ) ) {
+			return $this->cached_data['bought_items'];
 		}
+		else {
+			$response = $this->client->get( 'https://api.envato.com/v3/market/buyer/purchases', [
+				'headers'   => [
+					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
+				],
+			] );
+			$response = $this->decode_response( $response );
 
-		return $out;
+			$out = [];
+
+			foreach ( $response->purchases as $key => $purchase ) {
+				$out[] = [
+					'id'              => $purchase->item->id,
+					'name'            => $purchase->item->name,
+					'short_name'      => current( explode( ' ', $purchase->item->name ) ),
+					'supported_until' => $purchase->supported_until,
+					'sold_at'         => $purchase->sold_at,
+					'code'            => $purchase->code,
+				];
+			}
+
+			// cache the data
+			$this->cached_data['bought_items'] = $out;
+
+			return $out;
+		}
 	}
 
 	public function get_bought_items_string() {
 		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
 			$out .= $item['short_name'] . "\n";
+			return $out;
+		}, '' );
+	}
+
+	public function get_supported_items_string() {
+		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
+			if ( null !== $item['supported_until'] ) {
+				$out .= $item['short_name'] . "\n";
+			}
 			return $out;
 		}, '' );
 	}
