@@ -56,7 +56,7 @@ else {
 		'name'        => $EnvatoApi->get_name(),
 		'email'       => $EnvatoApi->get_email(),
 		// 'user_fields' => json_encode( ['bought_themes' => json_encode( $EnvatoApi->get_bought_items() ) ] ),
-		'user_fields' => json_encode( [ 'bought_themes' => 'carpress and hairpress' ] ),
+		'user_fields' => [ 'bought_themes' => 'carpress and hairpress' ],
 	];
 
 	$jwt = JWT::encode( $token, $key );
