@@ -26,7 +26,8 @@ class EnvatoApi  {
 
 	public function __construct() {
 		$this->client = new Client( [
-			'base_uri' => 'https://api.envato.com/v1/market/'
+			'base_uri' => 'https://api.envato.com/v1/market/',
+			'timeout'  => 10,
 		] );
 	}
 
