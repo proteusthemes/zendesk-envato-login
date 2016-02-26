@@ -5,7 +5,7 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 
 	protected function setUp() {
 		$this->EnvatoApi = new EnvatoApi();
-		$this->EnvatoApi->authorize();
+		$this->EnvatoApi->set_access_token( getenv( 'envato_access_token' ) );
 	}
 
 	public function testIsAuthorized() {

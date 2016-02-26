@@ -8,4 +8,7 @@
 			<directory suffix=".php">./test/</directory>
 		</testsuite>
 	</testsuites>
+	<php>
+		<env name="envato_access_token" value="wKU1Tc...uL9xPHa73YwcMV2JNVyJ5uJ" />
+	</php>
 </phpunit>

@@ -28,49 +28,37 @@ class EnvatoApi  {
 		return ( ! empty( $this->access_token ) );
 	}
 
-	public function authorize( $envato_code = '' ) {
-		if (
-			! empty ( $envato_code ) && (
-				! isset( $_SESSION['envato_access_token'] ) ||
-				( isset( $_SESSION['envato_access_token'] ) && $_SESSION['envato_access_expires_at'] > time() )
-			)
-		) {
-			$response = $this->client->post( 'https://api.envato.com/token', [
-				'form_params'   => [
-					'grant_type'    => 'authorization_code',
-					'code'          => $envato_code,
-					'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
-					'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
-				]
-			] );
+	public function authorize( $envato_code ) {
+		$response = $this->client->post( 'https://api.envato.com/token', [
+			'form_params'   => [
+				'grant_type'    => 'authorization_code',
+				'code'          => $envato_code,
+				'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
+				'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
+			]
+		] );
 
-			$envato_credentials = $this->decode_response( $response );
+		$envato_credentials = $this->decode_response( $response );
 
-			$this->save_access_token_to_session( $envato_credentials );
+		$this->set_access_token( $envato_credentials->access_token );
+
+		if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
+			print_r( $envato_credentials );
 		}
-
-		$this->set_access_token();
 	}
 
 	protected function decode_response( $response ) {
 		return json_decode( $response->getBody()->getContents() );
 	}
 
-	public function set_access_token() {
-		$this->access_token = $_SESSION['envato_access_token'];
+	public function set_access_token( $token ) {
+		$this->access_token = $token;
+
+		return $this->access_token;
 	}
 
 	public function get_access_token() {
 		return $this->access_token;
-	}
-
-	public function save_access_token_to_session( $envato_credentials ) {
-		$_SESSION['envato_access_token']      = $envato_credentials->access_token;
-		$_SESSION['envato_access_expires_at'] = time() + $envato_credentials->expires_in;
-
-		if ( getenv( 'ZEL_DEBUG' ) ) {
-			print_r( $envato_credentials );
-		}
 	}
 
 	public function get_email() {
