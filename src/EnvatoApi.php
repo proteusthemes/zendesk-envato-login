@@ -131,7 +131,7 @@ class EnvatoApi  {
 
 	public function get_bought_items_string() {
 		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
-			$out .= $item['short_name'] . "\n";
+			$out .= sprintf( '%s on %s%s', $item['short_name'], date( 'j M Y', strtotime( $item['sold_at'] ) ), "\n" );
 			return $out;
 		}, '' );
 	}
