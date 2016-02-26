@@ -42,6 +42,7 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 		$expected = [
 			'id'              => '4099496',
 			'name'            => 'HairPress - WordPress Theme for Hair Salons',
+			'short_name'      => 'HairPress',
 			'supported_until' => null,
 			'sold_at'         => '2014-01-20T19:16:32+11:00',
 			'code'            => '40cbd94a-9da4-4c42-84d3-aee1f7a65ef3',
