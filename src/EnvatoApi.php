@@ -139,7 +139,7 @@ class EnvatoApi  {
 	public function get_supported_items_string() {
 		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
 			if ( null !== $item['supported_until'] ) {
-				$out .= $item['short_name'] . "\n";
+				$out .= sprintf( '%s (%s)%s', $item['short_name'], date( 'j M Y', strtotime( $item['supported_until'] ) ), "\n" );
 			}
 			return $out;
 		}, '' );
