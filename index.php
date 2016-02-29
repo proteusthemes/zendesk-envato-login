@@ -3,35 +3,33 @@
 // sesstion needed for storing variables between redirects and user authorization
 session_start();
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
+require_once 'src/EnvatoApi.php';
 
 use \Firebase\JWT\JWT;
-use \GuzzleHttp\Client;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
+$dotenv->required( [
+	'ENVATO_CLIENT_ID',
+	'ENVATO_REDIRECT_URI',
+	'ENVATO_CLIENT_SECRET',
+	'ZENDESK_SHARED_SECRET',
+	'ZENDESK_SUBDOMAIN',
+] );
 
 /**
- * Config, this will go to .env
+ * Config, from .env
  */
 $config = [
 	'envato_client_id'      => getenv( 'ENVATO_CLIENT_ID' ),
 	'envato_redirect_uri'   => getenv( 'ENVATO_REDIRECT_URI' ),
-	'envato_client_secret'  => getenv( 'ENVATO_CLIENT_SECRET' ),
 	'zendesk_shared_secret' => getenv( 'ZENDESK_SHARED_SECRET' ),
 	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
 ];
 
 
-/**
- * Client which will make requests to Envato API
- *
- * http://guzzle.readthedocs.org/en/latest/quickstart.html
- */
-
-$envato_api = new Client( [
-	'base_uri' => 'https://api.envato.com/v1/market'
-] );
+$EnvatoApi = new EnvatoApi();
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 
@@ -43,46 +41,23 @@ if ( empty( $envato_code ) ) {
 	exit;
 }
 else {
-	$response = $envato_api->post( 'https://api.envato.com/token', [
-		'form_params'   => [
-			'grant_type'    => 'authorization_code',
-			'code'          => $envato_code,
-			'client_id'     => $config['envato_client_id'],
-			'client_secret' => $config['envato_client_secret'],
-		],
-	] );
-
-	$envato_credentials = json_decode( $response->getBody()->getContents() );
-
-	$user = $envato_api->get( 'https://api.envato.com/v1/market/private/user/account.json', [
-		'headers'   => [
-			'Authorization' => sprintf( 'Bearer %s', $envato_credentials->access_token ),
-		],
-	] );
-
-	$user = json_decode( $user->getBody()->getContents() );
-
-	$mail = $envato_api->get( 'https://api.envato.com/v1/market/private/user/email.json', [
-		'headers'   => [
-			'Authorization' => sprintf( 'Bearer %s', $envato_credentials->access_token ),
-		],
-	] );
-
-	$mail = json_decode( $mail->getBody()->getContents() );
-	$mail = $mail->email;
-
+	$EnvatoApi->authorize( $envato_code );
 
 	/**
 	 * See https://github.com/zendesk/zendesk_jwt_sso_examples/blob/master/php_jwt.php
 	 */
 
-	$key       = $config['zendesk_shared_secret'];
-	$now       = time();
+	$key   = $config['zendesk_shared_secret'];
+	$now   = time();
 	$token = [
-		'jti'   => md5( $now . mt_rand() ),
-		'iat'   => $now,
-		'name'  => sprintf( '%s %s', $user->account->firstname, $user->account->surname ),
-		'email' => $mail,
+		'jti'         => md5( $now . mt_rand() ),
+		'iat'         => $now,
+		'name'        => $EnvatoApi->get_name(),
+		'email'       => $EnvatoApi->get_email(),
+		'user_fields' => [
+			'bought_themes'    => $EnvatoApi->get_bought_items_string(),
+			'supported_themes' => $EnvatoApi->get_supported_items_string(),
+		],
 	];
 
 	$jwt = JWT::encode( $token, $key );
@@ -93,6 +68,11 @@ else {
 	}
 
 	// Redirect
-	header( 'Location: ' . $location );
-	exit;
+	if ( 'true' !== getenv( 'ZEL_DEBUG' ) ) {
+		header( 'Location: ' . $location );
+		exit;
+	}
+	else {
+		print_r( $token );
+	}
 }
