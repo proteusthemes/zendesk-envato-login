@@ -28,13 +28,18 @@ $config = [
 	'envato_redirect_uri'   => getenv( 'ENVATO_REDIRECT_URI' ),
 	'zendesk_shared_secret' => getenv( 'ZENDESK_SHARED_SECRET' ),
 	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
+	'slack_token'           => getenv( 'SLACK_TOKEN' ),
+	'slack_channel'         => getenv( 'SLACK_CHANNEL' ),
 ];
 
 /**
  * Logger
  */
 $logger = new Logger( 'general' );
-$logger->pushHandler( new SlackHandler( getenv( 'SLACK_TOKEN' ), '#support', 'ZendeskEnvato', Logger::WARNING ) );
+
+if ( $config['slack_token'] ) {
+	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'ZendeskEnvato', Logger::WARNING ) );
+}
 
 /**
  * EnvatoApi instance
