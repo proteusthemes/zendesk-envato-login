@@ -11,6 +11,7 @@
     "require": {
         "firebase/php-jwt": "^3.0",
         "guzzlehttp/guzzle": "^6.1",
-        "vlucas/phpdotenv": "^2.2"
+        "vlucas/phpdotenv": "^2.2",
+        "monolog/monolog": "^1.17"
     }
 }
