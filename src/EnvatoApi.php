@@ -46,18 +46,25 @@ class EnvatoApi  {
 	}
 
 	public function authorize( $envato_code ) {
-		$response = $this->client->post( '/token', [
-			'form_params'   => [
-				'grant_type'    => 'authorization_code',
-				'code'          => $envato_code,
-				'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
-				'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
-			]
-		] );
+
+		try {
+			$response = $this->client->post( '/token', [
+				'form_params'   => [
+					'grant_type'    => 'authorization_code',
+					'code'          => $envato_code,
+					'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
+					'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
+				]
+			] );
+		} catch ( RequestException $e ) {
+			$this->logger->addCritical( sprintf( 'Error when authorizing: %s', $e->getMessage() ), [ $e->getRequest(), $e->getResponse() ] );
+		}
 
 		$envato_credentials = $this->decode_response( $response );
 
 		$this->set_access_token( $envato_credentials->access_token );
+
+		$this->logger->addWarning( 'New user logged in to Zendesk', [ $this->get_name() ] );
 
 		if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
 			print_r( $envato_credentials );
@@ -96,11 +103,15 @@ class EnvatoApi  {
 	// GET http request, with predefined $this->client
 	protected function get( $endpoint ) {
 		if ( ! $this->is_cached( $endpoint ) ) {
-			$response = $this->client->get( $endpoint, [
-				'headers'   => [
-					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-				],
-			] );
+			try {
+				$response = $this->client->get( $endpoint, [
+					'headers'   => [
+						'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
+					],
+				] );
+			} catch ( RequestException $e ) {
+				$this->logger->addCritical( sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() ), [ $e->getRequest(), $e->getResponse() ] );
+			}
 
 			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
 		}
