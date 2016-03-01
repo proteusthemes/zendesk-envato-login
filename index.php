@@ -40,7 +40,8 @@ $logger->pushHandler( new SlackHandler( getenv( 'SLACK_TOKEN' ), '#support', 'Ze
  * EnvatoApi instance
  * @var EnvatoApi
  */
-$EnvatoApi = new EnvatoApi( $logger );
+$EnvatoApi = new EnvatoApi();
+$EnvatoApi->set_logger( $logger );
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 

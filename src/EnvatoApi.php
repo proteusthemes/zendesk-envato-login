@@ -31,11 +31,13 @@ class EnvatoApi  {
 	 */
 	protected $logger;
 
-	public function __construct( \Monolog\Logger $logger ) {
+	public function __construct() {
 		$this->client = new Client( [
-			'base_uri' => 'https://api.envato.com/v1/market/',
+			'base_uri' => 'https://api.envato.com/',
 		] );
+	}
 
+	public function set_logger( \Monolog\Logger $logger ) {
 		$this->logger = $logger;
 	}
 
@@ -44,7 +46,7 @@ class EnvatoApi  {
 	}
 
 	public function authorize( $envato_code ) {
-		$response = $this->client->post( 'https://api.envato.com/token', [
+		$response = $this->client->post( '/token', [
 			'form_params'   => [
 				'grant_type'    => 'authorization_code',
 				'code'          => $envato_code,
@@ -77,7 +79,7 @@ class EnvatoApi  {
 	}
 
 	public function get_email() {
-		$response = $this->client->get( 'private/user/email.json', [
+		$response = $this->client->get( '/v1/market/private/user/email.json', [
 			'headers'   => [
 				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 			],
@@ -87,7 +89,7 @@ class EnvatoApi  {
 	}
 
 	public function get_username() {
-		$response = $this->client->get( 'private/user/username.json', [
+		$response = $this->client->get( '/v1/market/private/user/username.json', [
 			'headers'   => [
 				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 			],
@@ -97,7 +99,7 @@ class EnvatoApi  {
 	}
 
 	public function get_name() {
-		$response = $this->client->get( 'private/user/account.json', [
+		$response = $this->client->get( '/v1/market/private/user/account.json', [
 			'headers'   => [
 				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 			],
@@ -111,7 +113,7 @@ class EnvatoApi  {
 			return $this->cached_data['bought_items'];
 		}
 		else {
-			$response = $this->client->get( 'https://api.envato.com/v3/market/buyer/purchases', [
+			$response = $this->client->get( '/v3/market/buyer/purchases', [
 				'headers'   => [
 					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 				],
