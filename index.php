@@ -7,6 +7,8 @@ require_once 'vendor/autoload.php';
 require_once 'src/EnvatoApi.php';
 
 use \Firebase\JWT\JWT;
+use \Monolog\Logger;
+use \Monolog\Handler\SlackHandler;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
@@ -28,8 +30,17 @@ $config = [
 	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
 ];
 
+/**
+ * Logger
+ */
+$logger = new Logger( 'general' );
+$logger->pushHandler( new SlackHandler( getenv( 'SLACK_TOKEN' ), '#support', 'ZendeskEnvato', Logger::WARNING ) );
 
-$EnvatoApi = new EnvatoApi();
+/**
+ * EnvatoApi instance
+ * @var EnvatoApi
+ */
+$EnvatoApi = new EnvatoApi( $logger );
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 

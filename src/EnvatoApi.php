@@ -1,6 +1,7 @@
 <?php
 
 use \GuzzleHttp\Client;
+use \GuzzleHttp\Exception\RequestException;
 
 /**
 * Wrapper for the Envato API
@@ -24,10 +25,18 @@ class EnvatoApi  {
 	 */
 	protected $cached_data = [];
 
-	public function __construct() {
+	/**
+	 * Array of cached data
+	 * @var \Monolog\Logger
+	 */
+	protected $logger;
+
+	public function __construct( \Monolog\Logger $logger ) {
 		$this->client = new Client( [
 			'base_uri' => 'https://api.envato.com/v1/market/',
 		] );
+
+		$this->logger = $logger;
 	}
 
 	public function is_authorized() {
