@@ -78,33 +78,28 @@ class EnvatoApi  {
 		return $this->access_token;
 	}
 
-	public function get_email() {
-		$response = $this->client->get( '/v1/market/private/user/email.json', [
+	protected function get( $endpoint ) {
+		$response = $this->client->get( $endpoint, [
 			'headers'   => [
 				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 			],
 		] );
-		$response = $this->decode_response( $response );
+
+		return $this->decode_response( $response );
+	}
+
+	public function get_email() {
+		$response = $this->get( '/v1/market/private/user/email.json' );
 		return $response->email;
 	}
 
 	public function get_username() {
-		$response = $this->client->get( '/v1/market/private/user/username.json', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
+		$response = $this->get( '/v1/market/private/user/username.json' );
 		return $response->username;
 	}
 
 	public function get_name() {
-		$response = $this->client->get( '/v1/market/private/user/account.json', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
+		$response = $this->get( '/v1/market/private/user/account.json' );
 		return sprintf( '%s %s', $response->account->firstname, $response->account->surname );
 	}
 
@@ -113,16 +108,11 @@ class EnvatoApi  {
 			return $this->cached_data['bought_items'];
 		}
 		else {
-			$response = $this->client->get( '/v3/market/buyer/purchases', [
-				'headers'   => [
-					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-				],
-			] );
-			$response = $this->decode_response( $response );
+			$response = $this->get( '/v3/market/buyer/purchases' );
 
 			$out = [];
 
-			foreach ( $response->purchases as $key => $purchase ) {
+			foreach ( $response->purchases as $purchase ) {
 				$out[] = [
 					'id'              => $purchase->item->id,
 					'name'            => $purchase->item->name,
