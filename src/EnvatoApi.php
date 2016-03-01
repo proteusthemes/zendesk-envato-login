@@ -57,14 +57,22 @@ class EnvatoApi  {
 				]
 			] );
 		} catch ( RequestException $e ) {
-			$this->logger->addCritical( sprintf( 'Error when authorizing: %s', $e->getMessage() ), [ $e->getRequest(), $e->getResponse() ] );
+			$msg = sprintf( 'Error when authorizing: %s', $e->getMessage() );
+
+			if ( $this->logger ) {
+				$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+			}
+
+			echo $msg;
 		}
 
 		$envato_credentials = $this->decode_response( $response );
 
 		$this->set_access_token( $envato_credentials->access_token );
 
-		$this->logger->addWarning( 'New user logged in to Zendesk', [ $this->get_name() ] );
+		if ( $this->logger ) {
+			$this->logger->addInfo( 'New user logged in to Zendesk.', [ $this->get_name() ] );
+		}
 
 		if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
 			print_r( $envato_credentials );
@@ -110,7 +118,13 @@ class EnvatoApi  {
 					],
 				] );
 			} catch ( RequestException $e ) {
-				$this->logger->addCritical( sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() ), [ $e->getRequest(), $e->getResponse() ] );
+				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
+
+				if ( $this->logger ) {
+					$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+				}
+
+				echo $msg;
 			}
 
 			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );

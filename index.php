@@ -38,7 +38,7 @@ $config = [
 $logger = new Logger( 'general' );
 
 if ( $config['slack_token'] ) {
-	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'ZendeskEnvato', Logger::WARNING ) );
+	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'ZendeskEnvato', Logger::DEBUG ) );
 }
 
 /**
