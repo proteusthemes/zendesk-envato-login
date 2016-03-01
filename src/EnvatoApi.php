@@ -78,14 +78,34 @@ class EnvatoApi  {
 		return $this->access_token;
 	}
 
-	protected function get( $endpoint ) {
-		$response = $this->client->get( $endpoint, [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
+	// check if the data is cached already
+	private function is_cached( $hash ) {
+		return array_key_exists( $hash, $this->cached_data );
+	}
 
-		return $this->decode_response( $response );
+	private function set_cached_data( $hash, $data ) {
+		$this->cached_data[ $hash ] = $data;
+
+		return $this->get_cached_data( $hash );
+	}
+
+	private function get_cached_data( $hash ) {
+		return $this->cached_data[ $hash ];
+	}
+
+	// GET http request, with predefined $this->client
+	protected function get( $endpoint ) {
+		if ( ! $this->is_cached( $endpoint ) ) {
+			$response = $this->client->get( $endpoint, [
+				'headers'   => [
+					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
+				],
+			] );
+
+			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
+		}
+
+		return $this->get_cached_data( $endpoint );
 	}
 
 	public function get_email() {
@@ -104,10 +124,7 @@ class EnvatoApi  {
 	}
 
 	public function get_bought_items() {
-		if ( array_key_exists( 'bought_items', $this->cached_data ) ) {
-			return $this->cached_data['bought_items'];
-		}
-		else {
+		if ( ! $this->is_cached( 'bought_items' ) ) {
 			$response = $this->get( '/v3/market/buyer/purchases' );
 
 			$out = [];
@@ -124,10 +141,10 @@ class EnvatoApi  {
 			}
 
 			// cache the data
-			$this->cached_data['bought_items'] = $out;
-
-			return $out;
+			$this->set_cached_data( 'bought_items', $out );
 		}
+
+		return $this->get_cached_data( 'bought_items' );
 	}
 
 	public function get_bought_items_string() {
