@@ -70,7 +70,7 @@ class EnvatoApi  {
 
 		$this->set_access_token( $envato_credentials->access_token );
 
-		if ( $this->logger ) {
+		if ( $this->logger && 'true' === getenv( 'SLACK_INFO_LOGGING' ) ) {
 			$this->logger->addInfo( sprintf( 'New user logged in to Zendesk: %s (%s).', $this->get_name(), $this->get_username() ) );
 		}
 
