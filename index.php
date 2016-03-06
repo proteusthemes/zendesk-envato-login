@@ -7,6 +7,8 @@ require_once 'vendor/autoload.php';
 require_once 'src/EnvatoApi.php';
 
 use \Firebase\JWT\JWT;
+use \Monolog\Logger;
+use \Monolog\Handler\SlackHandler;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
@@ -26,10 +28,25 @@ $config = [
 	'envato_redirect_uri'   => getenv( 'ENVATO_REDIRECT_URI' ),
 	'zendesk_shared_secret' => getenv( 'ZENDESK_SHARED_SECRET' ),
 	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
+	'slack_token'           => getenv( 'SLACK_TOKEN' ),
+	'slack_channel'         => getenv( 'SLACK_CHANNEL' ),
 ];
 
+/**
+ * Logger
+ */
+$logger = new Logger( 'general' );
 
+if ( $config['slack_token'] ) {
+	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'Zendesk-Envato Login', false, ':helmet_with_white_cross:', Logger::DEBUG ) );
+}
+
+/**
+ * EnvatoApi instance
+ * @var EnvatoApi
+ */
 $EnvatoApi = new EnvatoApi();
+$EnvatoApi->set_logger( $logger );
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 
@@ -57,6 +74,7 @@ else {
 		'user_fields' => [
 			'bought_themes'    => $EnvatoApi->get_bought_items_string(),
 			'supported_themes' => $EnvatoApi->get_supported_items_string(),
+			'tf_username'      => $EnvatoApi->get_username(),
 		],
 	];
 

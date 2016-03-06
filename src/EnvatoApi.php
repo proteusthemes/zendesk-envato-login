@@ -1,6 +1,7 @@
 <?php
 
 use \GuzzleHttp\Client;
+use \GuzzleHttp\Exception\RequestException;
 
 /**
 * Wrapper for the Envato API
@@ -24,10 +25,20 @@ class EnvatoApi  {
 	 */
 	protected $cached_data = [];
 
+	/**
+	 * Array of cached data
+	 * @var \Monolog\Logger
+	 */
+	protected $logger;
+
 	public function __construct() {
 		$this->client = new Client( [
-			'base_uri' => 'https://api.envato.com/v1/market/',
+			'base_uri' => 'https://api.envato.com/',
 		] );
+	}
+
+	public function set_logger( \Monolog\Logger $logger ) {
+		$this->logger = $logger;
 	}
 
 	public function is_authorized() {
@@ -35,18 +46,33 @@ class EnvatoApi  {
 	}
 
 	public function authorize( $envato_code ) {
-		$response = $this->client->post( 'https://api.envato.com/token', [
-			'form_params'   => [
-				'grant_type'    => 'authorization_code',
-				'code'          => $envato_code,
-				'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
-				'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
-			]
-		] );
+
+		try {
+			$response = $this->client->post( '/token', [
+				'form_params'   => [
+					'grant_type'    => 'authorization_code',
+					'code'          => $envato_code,
+					'client_id'     => getenv( 'ENVATO_CLIENT_ID' ),
+					'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
+				]
+			] );
+		} catch ( RequestException $e ) {
+			$msg = sprintf( 'Error when authorizing: %s', $e->getMessage() );
+
+			if ( $this->logger ) {
+				$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+			}
+
+			echo $msg;
+		}
 
 		$envato_credentials = $this->decode_response( $response );
 
 		$this->set_access_token( $envato_credentials->access_token );
+
+		if ( $this->logger && 'true' === getenv( 'SLACK_INFO_LOGGING' ) ) {
+			$this->logger->addInfo( sprintf( 'New user logged in to Zendesk: %s (%s).', $this->get_name(), $this->get_username() ) );
+		}
 
 		if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
 			print_r( $envato_credentials );
@@ -67,51 +93,68 @@ class EnvatoApi  {
 		return $this->access_token;
 	}
 
+	// check if the data is cached already
+	private function is_cached( $hash ) {
+		return array_key_exists( $hash, $this->cached_data );
+	}
+
+	private function set_cached_data( $hash, $data ) {
+		$this->cached_data[ $hash ] = $data;
+
+		return $this->get_cached_data( $hash );
+	}
+
+	private function get_cached_data( $hash ) {
+		return $this->cached_data[ $hash ];
+	}
+
+	// GET http request, with predefined $this->client
+	protected function get( $endpoint ) {
+		if ( ! $this->is_cached( $endpoint ) ) {
+			try {
+				$response = $this->client->get( $endpoint, [
+					'headers'   => [
+						'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
+					],
+				] );
+			} catch ( RequestException $e ) {
+				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
+
+				if ( $this->logger ) {
+					$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+				}
+
+				echo $msg;
+			}
+
+			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
+		}
+
+		return $this->get_cached_data( $endpoint );
+	}
+
 	public function get_email() {
-		$response = $this->client->get( 'private/user/email.json', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
+		$response = $this->get( '/v1/market/private/user/email.json' );
 		return $response->email;
 	}
 
 	public function get_username() {
-		$response = $this->client->get( 'private/user/username.json', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
+		$response = $this->get( '/v1/market/private/user/username.json' );
 		return $response->username;
 	}
 
 	public function get_name() {
-		$response = $this->client->get( 'private/user/account.json', [
-			'headers'   => [
-				'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-			],
-		] );
-		$response = $this->decode_response( $response );
+		$response = $this->get( '/v1/market/private/user/account.json' );
 		return sprintf( '%s %s', $response->account->firstname, $response->account->surname );
 	}
 
 	public function get_bought_items() {
-		if ( array_key_exists( 'bought_items', $this->cached_data ) ) {
-			return $this->cached_data['bought_items'];
-		}
-		else {
-			$response = $this->client->get( 'https://api.envato.com/v3/market/buyer/purchases', [
-				'headers'   => [
-					'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
-				],
-			] );
-			$response = $this->decode_response( $response );
+		if ( ! $this->is_cached( 'bought_items' ) ) {
+			$response = $this->get( '/v3/market/buyer/purchases' );
 
 			$out = [];
 
-			foreach ( $response->purchases as $key => $purchase ) {
+			foreach ( $response->purchases as $purchase ) {
 				$out[] = [
 					'id'              => $purchase->item->id,
 					'name'            => $purchase->item->name,
@@ -123,10 +166,10 @@ class EnvatoApi  {
 			}
 
 			// cache the data
-			$this->cached_data['bought_items'] = $out;
-
-			return $out;
+			$this->set_cached_data( 'bought_items', $out );
 		}
+
+		return $this->get_cached_data( 'bought_items' );
 	}
 
 	public function get_bought_items_string() {
