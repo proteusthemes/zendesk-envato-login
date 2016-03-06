@@ -74,6 +74,7 @@ else {
 		'user_fields' => [
 			'bought_themes'    => $EnvatoApi->get_bought_items_string(),
 			'supported_themes' => $EnvatoApi->get_supported_items_string(),
+			'tf_username'      => $EnvatoApi->get_username(),
 		],
 	];
 

@@ -19,14 +19,15 @@ The configuration is loaded using the [dotenv](https://github.com/vlucas/phpdote
 
 Once configured, point your Zendesk login to the `index.php` file at root of this repo. This file will handle redirect to Envato API, obtain the credentials and redirect the logged in user back to Zendesk.
 
-#### Bought and supported themes
+#### Bought and supported themes, username
 
-Along with the name and email address, this script will also send to Zendesk the list of the themes the user bought and the list of the themes that the user is entitled to get support for. In order to save these info, you should manually create 2 fields in in Zendesk.
+Along with the name and email address, this script will also send to Zendesk the list of the themes the user bought, the list of the themes that the user is entitled to get support for and the username. In order to save these info, you should manually create 3 fields in in Zendesk.
 
 In Zendesk go to Settings > User Fields and add 2 Multi-line text fields. Make sure the **Field keys** are exactly:
 
 - `bought_themes`
 - `supported_themes`
+- `tf_username`
 
 ### Unit tests
 
