@@ -37,8 +37,6 @@ The project is covered with tests, but due to the nature how the Envato API work
 $ envato_access_token=0FeF24T000000004P1IbHL1111ySmJ7f phpunit
 ```
 
-Therefore this repo cannot be 100% automatically tested. If you have any idea, how this would be possible to achieve, let me know via issues.
-
 ### Requirements
 
 PHP 5.5+ with curl.
