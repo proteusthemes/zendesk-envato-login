@@ -158,7 +158,7 @@ class EnvatoApi  {
 				$out[] = [
 					'id'              => $purchase->item->id,
 					'name'            => $purchase->item->name,
-					'short_name'      => current( explode( ' ', $purchase->item->name ) ),
+					'short_name'      => $this->get_short_item_name( $purchase->item->name ),
 					'supported_until' => $purchase->supported_until,
 					'sold_at'         => $purchase->sold_at,
 					'code'            => $purchase->code,
@@ -186,5 +186,15 @@ class EnvatoApi  {
 			}
 			return $out;
 		}, '' );
+	}
+
+	private function get_short_item_name( $long_name ) {
+		$name = strtok( $long_name, ' ' );
+
+		if ( stripos( $long_name, 'html' ) || stripos( $long_name, 'template' ) ) {
+			$name .= ' HTML';
+		}
+
+		return $name;
 	}
 }
