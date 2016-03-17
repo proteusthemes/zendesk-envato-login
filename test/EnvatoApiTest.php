@@ -31,6 +31,14 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 						},
 						"supported_until": "2016-02-27T05:33:01+11:00",
 						"code": "ggg41153-fff0-ffff-ffff-000ee0686786"
+					}, {
+						"sold_at": "2015-05-01T22:00:00+11:00",
+						"item": {
+							"id": 7499064,
+							"name": "Readable - Blog Template Focused on Readability"
+						},
+						"supported_until": null,
+						"code": "ggg41155-fff0-ffff-ffff-000ee0686786"
 					}]
 				}'
 			),
@@ -91,39 +99,13 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals( 'Primož Cigler', $envatoApi->get_name() );
 	}
 
-	public function testArrayOfBoughtThemes() {
-		$handler   = HandlerStack::create( $this->itemsMock );
-		$envatoApi = new EnvatoApi( $handler );
-
-		$expected = [
-			[
-				'id'              => 3803346,
-				'name'            => 'Hairpress - HTML Template for Hair Salons',
-				'short_name'      => 'Hairpress',
-				'supported_until' => null,
-				'sold_at'         => '2014-02-12T05:33:01+11:00',
-				'code'            => 'ggg41153-fff0-ffff-ffff-111ee0686786',
-			], [
-				'id'              => 4099496,
-				'name'            => 'HairPress - WordPress Theme for Hair Salons',
-				'short_name'      => 'HairPress',
-				'supported_until' => '2016-02-27T05:33:01+11:00',
-				'sold_at'         => '2015-03-01T05:33:01+11:00',
-				'code'            => 'ggg41153-fff0-ffff-ffff-000ee0686786',
-			],
-		];
-
-		$actual = $envatoApi->get_bought_items();
-
-		$this->assertEquals( $expected, $actual );
-	}
-
 	public function testBoughtItemsString() {
 		$handler   = HandlerStack::create( $this->itemsMock );
 		$envatoApi = new EnvatoApi( $handler );
 
-		$expected = "Hairpress (11 Feb 2014)
+		$expected = "Hairpress HTML (11 Feb 2014)
 HairPress (28 Feb 2015)
+Readable HTML (1 May 2015)
 ";
 		$actual = $envatoApi->get_bought_items_string();
 
