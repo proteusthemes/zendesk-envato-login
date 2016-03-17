@@ -1,6 +1,8 @@
 Zendesk login with Envato API
 =============================
 
+[ ![Codeship Status for proteusthemes/zendesk-envato-login](https://codeship.com/projects/8c5f6860-bd22-0133-0fb0-4610616512f7/status?branch=master)](https://codeship.com/projects/136475)
+
 This project connects the [Zendesk single sign-on](https://support.zendesk.com/hc/en-us/articles/203663816-Setting-up-single-sign-on-with-JWT-JSON-Web-Token-) (SSO) with JSON Web Token (JWT) to [Envato API](). After implementing this, the users will be able to sign in to your Zendesk account only with their Envato accounts.
 
 ### Setup
@@ -28,14 +30,6 @@ In Zendesk go to Settings > User Fields and add 2 Multi-line text fields. Make s
 - `bought_themes`
 - `supported_themes`
 - `tf_username`
-
-### Unit tests
-
-The project is covered with tests, but due to the nature how the Envato API works, you need to obtain the `access_token` manually (see the debug mode above) and expose it as env variable when running the `phpunit` command:
-
-```bash
-$ envato_access_token=0FeF24T000000004P1IbHL1111ySmJ7f phpunit
-```
 
 ### Requirements
 
