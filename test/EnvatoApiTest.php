@@ -1,52 +1,143 @@
 <?php
 
-class EnvatoApiTest extends PHPUnit_Framework_TestCase {
-	protected $EnvatoApi;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\RequestException;
 
-	protected function setUp() {
-		$this->EnvatoApi = new EnvatoApi();
-		$this->EnvatoApi->set_access_token( getenv( 'envato_access_token' ) );
+class EnvatoApiTest extends PHPUnit_Framework_TestCase {
+	protected $itemsMock;
+
+	public function setUp() {
+		date_default_timezone_set( 'UTC' );
+
+		$this->itemsMock = new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{
+				"purchases": [{
+						"sold_at": "2014-02-12T05:33:01+11:00",
+						"item": {
+							"id": 3803346,
+							"name": "Hairpress - HTML Template for Hair Salons"
+						},
+						"supported_until": null,
+						"code": "ggg41153-fff0-ffff-ffff-111ee0686786"
+					}, {
+						"sold_at": "2015-03-01T05:33:01+11:00",
+						"item": {
+							"id": 4099496,
+							"name": "HairPress - WordPress Theme for Hair Salons"
+						},
+						"supported_until": "2016-02-27T05:33:01+11:00",
+						"code": "ggg41153-fff0-ffff-ffff-000ee0686786"
+					}]
+				}'
+			),
+		]);
 	}
 
 	public function testIsAuthorized() {
-		$this->assertTrue( $this->EnvatoApi->is_authorized() );
+		$envatoApi = new EnvatoApi();
+
+		$this->assertFalse( $envatoApi->is_authorized() );
+
+		$envatoApi->set_access_token( 'anything' );
+
+		$this->assertTrue( $envatoApi->is_authorized() );
 	}
 
 	public function testGetEmail() {
-		$this->assertEquals( 'primoz.cigler@gmail.com', $this->EnvatoApi->get_email() );
+		$mock = new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{"email": "info@example.io"}' ),
+		]);
+
+		$handler   = HandlerStack::create( $mock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$this->assertEquals( 'info@example.io', $envatoApi->get_email() );
 	}
 
 	public function testGetUsername() {
-		$this->assertEquals( 'cyman', $this->EnvatoApi->get_username() );
+		$mock = new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{"username": "TestUsername"}' ),
+		]);
+
+		$handler   = HandlerStack::create( $mock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$this->assertEquals( 'TestUsername', $envatoApi->get_username() );
 	}
 
 	public function testGetName() {
-		$this->assertEquals( 'Primoz Cigler', $this->EnvatoApi->get_name() );
+		$mock = new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{
+				"account": {
+					"image": "https://0.s3.envato.com/files/83661947/avatar_lite.png",
+					"firstname": "Primož",
+					"surname": "Cigler",
+					"available_earnings": "10.0",
+					"total_deposits": "0.00",
+					"balance": "15.0",
+					"country": "Uganda"
+					}
+				}'
+			),
+		]);
+
+		$handler   = HandlerStack::create( $mock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$this->assertEquals( 'Primož Cigler', $envatoApi->get_name() );
 	}
 
 	public function testArrayOfBoughtThemes() {
-		$actual = $this->EnvatoApi->get_bought_items();
+		$handler   = HandlerStack::create( $this->itemsMock );
+		$envatoApi = new EnvatoApi( $handler );
 
-		$this->assertTrue( is_array( $actual ) );
+		$expected = [
+			[
+				'id'              => 3803346,
+				'name'            => 'Hairpress - HTML Template for Hair Salons',
+				'short_name'      => 'Hairpress',
+				'supported_until' => null,
+				'sold_at'         => '2014-02-12T05:33:01+11:00',
+				'code'            => 'ggg41153-fff0-ffff-ffff-111ee0686786',
+			], [
+				'id'              => 4099496,
+				'name'            => 'HairPress - WordPress Theme for Hair Salons',
+				'short_name'      => 'HairPress',
+				'supported_until' => '2016-02-27T05:33:01+11:00',
+				'sold_at'         => '2015-03-01T05:33:01+11:00',
+				'code'            => 'ggg41153-fff0-ffff-ffff-000ee0686786',
+			],
+		];
 
-		return $actual;
+		$actual = $envatoApi->get_bought_items();
+
+		$this->assertEquals( $expected, $actual );
 	}
 
-	/**
-	 * @depends testArrayOfBoughtThemes
-	 */
-	// public function testSingleTheme(array $bought_themes) {
-	// 	$actual = array_pop( $bought_themes );
+	public function testBoughtItemsString() {
+		$handler   = HandlerStack::create( $this->itemsMock );
+		$envatoApi = new EnvatoApi( $handler );
 
-	// 	$expected = [
-	// 		'id'              => '4099496',
-	// 		'name'            => 'HairPress - WordPress Theme for Hair Salons',
-	// 		'short_name'      => 'HairPress',
-	// 		'supported_until' => null,
-	// 		'sold_at'         => '2014-01-20T19:16:32+11:00',
-	// 		'code'            => '40cbd94a-9da4-4c42-84d3-aee1f7a65ef3',
-	// 	];
+		$expected = "Hairpress (11 Feb 2014)
+HairPress (28 Feb 2015)
+";
+		$actual = $envatoApi->get_bought_items_string();
 
-	// 	$this->assertEquals( $expected, $actual );
-	// }
+		$this->assertEquals( $expected, $actual );
+	}
+
+	public function testSupportedItemsString() {
+		$handler   = HandlerStack::create( $this->itemsMock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$expected = "HairPress (26 Feb 2016)
+";
+		$actual = $envatoApi->get_supported_items_string();
+
+		$this->assertEquals( $expected, $actual );
+	}
 }
