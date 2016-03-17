@@ -31,9 +31,10 @@ class EnvatoApi  {
 	 */
 	protected $logger;
 
-	public function __construct() {
+	public function __construct( \GuzzleHttp\HandlerStack $handler = null ) {
 		$this->client = new Client( [
 			'base_uri' => 'https://api.envato.com/',
+			'handler'  => $handler,
 		] );
 	}
 

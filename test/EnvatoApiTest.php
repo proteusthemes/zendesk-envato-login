@@ -1,15 +1,23 @@
 <?php
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\RequestException;
+
 class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 	protected $EnvatoApi;
 
-	protected function setUp() {
-		$this->EnvatoApi = new EnvatoApi();
-		$this->EnvatoApi->set_access_token( getenv( 'envato_access_token' ) );
-	}
-
 	public function testIsAuthorized() {
-		$this->assertTrue( $this->EnvatoApi->is_authorized() );
+		$envatoApi = new EnvatoApi();
+
+		$this->assertFalse( $envatoApi->is_authorized() );
+
+		$envatoApi->set_access_token( getenv( 'envato_access_token' ) );
+
+		$this->assertTrue( $envatoApi->is_authorized() );
 	}
 
 	public function testGetEmail() {
