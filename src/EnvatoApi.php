@@ -195,7 +195,7 @@ class EnvatoApi  {
 				array_filter(
 					$this->get_bought_items(),
 					function ( $item ) {
-						return  null !== $item['supported_until'];
+						return  null !== $item['supported_until'] && ( time() - 86400 ) < strtotime( $item['supported_until'] );
 					}
 				)
 			)

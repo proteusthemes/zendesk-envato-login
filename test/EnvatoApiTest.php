@@ -32,6 +32,14 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 						"supported_until": "2016-02-27T05:33:01+11:00",
 						"code": "ggg41153-fff0-ffff-ffff-000ee0686786"
 					}, {
+						"sold_at": "2016-03-01T05:45:00+11:00",
+						"item": {
+							"id": 14458185,
+							"name": "Beauty - Hair Salon, Nail, Spa, Fashion WP Theme"
+						},
+						"supported_until": "2026-02-27T05:33:01+11:00",
+						"code": "ggg41153-fff0-ffff-ffff-000ee0686786"
+					}, {
 						"sold_at": "2015-05-01T22:00:00+11:00",
 						"item": {
 							"id": 7499064,
@@ -105,6 +113,7 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 
 		$expected = "Hairpress HTML (11 Feb 2014)
 HairPress (28 Feb 2015)
+Beauty (29 Feb 2016)
 Readable HTML (1 May 2015)";
 		$actual = $envatoApi->get_bought_items_string();
 
@@ -115,7 +124,7 @@ Readable HTML (1 May 2015)";
 		$handler   = HandlerStack::create( $this->itemsMock );
 		$envatoApi = new EnvatoApi( $handler );
 
-		$expected = "HairPress (26 Feb 2016)";
+		$expected = "Beauty (26 Feb 2026)";
 		$actual = $envatoApi->get_supported_items_string();
 
 		$this->assertEquals( $expected, $actual );
