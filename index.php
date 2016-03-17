@@ -36,9 +36,10 @@ $config = [
  * Logger
  */
 $logger = new Logger( 'general' );
+$logger->pushHandler( new RotatingFileHandler( __DIR__ . '/logs/log', 7, Logger::DEBUG ) );
 
 if ( $config['slack_token'] ) {
-	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'Zendesk-Envato Login', true, ':helmet_with_white_cross:', Logger::DEBUG ) );
+	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'Zendesk-Envato Login', true, ':helmet_with_white_cross:', Logger::ERROR ) );
 }
 
 /**

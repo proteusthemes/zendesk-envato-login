@@ -61,7 +61,7 @@ class EnvatoApi  {
 			$msg = sprintf( 'Error when authorizing: %s', $e->getMessage() );
 
 			if ( $this->logger ) {
-				$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+				$this->logger->addCritical( $msg, $e->getHandlerContext() );
 			}
 
 			echo $msg;
@@ -122,7 +122,7 @@ class EnvatoApi  {
 				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
 
 				if ( $this->logger ) {
-					$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+					$this->logger->addCritical( $msg, $e->getHandlerContext() );
 				}
 
 				echo $msg;
