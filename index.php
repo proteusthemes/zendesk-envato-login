@@ -9,6 +9,7 @@ require_once 'src/EnvatoApi.php';
 use \Firebase\JWT\JWT;
 use \Monolog\Logger;
 use \Monolog\Handler\SlackHandler;
+use \Monolog\Handler\RotatingFileHandler;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
