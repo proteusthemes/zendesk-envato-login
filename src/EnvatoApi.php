@@ -149,7 +149,7 @@ class EnvatoApi  {
 		return sprintf( '%s %s', $response->account->firstname, $response->account->surname );
 	}
 
-	public function get_bought_items() {
+	private function get_bought_items() {
 		if ( ! $this->is_cached( 'bought_items' ) ) {
 			$response = $this->get( '/v3/market/buyer/purchases' );
 
