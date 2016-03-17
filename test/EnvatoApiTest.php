@@ -105,8 +105,7 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 
 		$expected = "Hairpress HTML (11 Feb 2014)
 HairPress (28 Feb 2015)
-Readable HTML (1 May 2015)
-";
+Readable HTML (1 May 2015)";
 		$actual = $envatoApi->get_bought_items_string();
 
 		$this->assertEquals( $expected, $actual );
@@ -116,8 +115,7 @@ Readable HTML (1 May 2015)
 		$handler   = HandlerStack::create( $this->itemsMock );
 		$envatoApi = new EnvatoApi( $handler );
 
-		$expected = "HairPress (26 Feb 2016)
-";
+		$expected = "HairPress (26 Feb 2016)";
 		$actual = $envatoApi->get_supported_items_string();
 
 		$this->assertEquals( $expected, $actual );

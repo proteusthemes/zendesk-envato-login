@@ -174,19 +174,32 @@ class EnvatoApi  {
 	}
 
 	public function get_bought_items_string() {
-		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
-			$out .= sprintf( '%s (%s)%s', $item['short_name'], date( 'j M Y', strtotime( $item['sold_at'] ) ), "\n" );
-			return $out;
-		}, '' );
+		return implode(
+			"\n",
+			array_map(
+				function ( $item ) {
+					return sprintf( '%s (%s)', $item['short_name'], date( 'j M Y', strtotime( $item['sold_at'] ) ) );
+				},
+				$this->get_bought_items()
+			)
+		);
 	}
 
 	public function get_supported_items_string() {
-		return array_reduce( $this->get_bought_items(), function ( $out, $item ) {
-			if ( null !== $item['supported_until'] ) {
-				$out .= sprintf( '%s (%s)%s', $item['short_name'], date( 'j M Y', strtotime( $item['supported_until'] ) ), "\n" );
-			}
-			return $out;
-		}, '' );
+		return implode(
+			"\n",
+			array_map(
+				function ( $item ) {
+					return sprintf( '%s (%s)', $item['short_name'], date( 'j M Y', strtotime( $item['supported_until'] ) ) );
+				},
+				array_filter(
+					$this->get_bought_items(),
+					function ( $item ) {
+						return  null !== $item['supported_until'];
+					}
+				)
+			)
+		);
 	}
 
 	private function get_short_item_name( $long_name ) {
