@@ -61,7 +61,7 @@ class EnvatoApi  {
 			$msg = sprintf( 'Error when authorizing: %s', $e->getMessage() );
 
 			if ( $this->logger ) {
-				$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+				$this->logger->addCritical( $msg, $e->getHandlerContext() );
 			}
 
 			echo $msg;
@@ -71,7 +71,7 @@ class EnvatoApi  {
 
 		$this->set_access_token( $envato_credentials->access_token );
 
-		if ( $this->logger && 'true' === getenv( 'SLACK_INFO_LOGGING' ) ) {
+		if ( $this->logger ) {
 			$this->logger->addInfo( sprintf( 'New user logged in to Zendesk: %s (%s).', $this->get_name(), $this->get_username() ) );
 		}
 
@@ -122,7 +122,7 @@ class EnvatoApi  {
 				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
 
 				if ( $this->logger ) {
-					$this->logger->addCritical( $msg, [ $e->getRequest(), $e->getResponse() ] );
+					$this->logger->addCritical( $msg, $e->getHandlerContext() );
 				}
 
 				echo $msg;
