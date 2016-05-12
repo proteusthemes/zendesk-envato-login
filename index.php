@@ -73,6 +73,7 @@ else {
 		'iat'         => $now,
 		'name'        => $EnvatoApi->get_name(),
 		'email'       => $EnvatoApi->get_email(),
+		'tags'        => [ 'username_' . $EnvatoApi->get_username ],
 		'user_fields' => [
 			'bought_themes'    => $EnvatoApi->get_bought_items_string(),
 			'supported_themes' => $EnvatoApi->get_supported_items_string(),
