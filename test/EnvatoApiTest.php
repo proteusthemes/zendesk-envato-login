@@ -105,6 +105,7 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 		$envatoApi = new EnvatoApi( $handler );
 
 		$this->assertEquals( 'Primož Cigler', $envatoApi->get_name() );
+		$this->assertEquals( 'Uganda', $envatoApi->get_country() );
 	}
 
 	public function testBoughtItemsString() {

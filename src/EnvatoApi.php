@@ -149,6 +149,11 @@ class EnvatoApi  {
 		return sprintf( '%s %s', $response->account->firstname, $response->account->surname );
 	}
 
+	public function get_country() {
+		$response = $this->get( '/v1/market/private/user/account.json' );
+		return $response->account->country;
+	}
+
 	private function get_bought_items() {
 		if ( ! $this->is_cached( 'bought_items' ) ) {
 			$response = $this->get( '/v3/market/buyer/purchases' );

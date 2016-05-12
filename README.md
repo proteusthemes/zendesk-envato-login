@@ -25,11 +25,12 @@ Once configured, point your Zendesk login to the `index.php` file at root of thi
 
 Along with the name and email address, this script will also send to Zendesk the list of the themes the user bought, the list of the themes that the user is entitled to get support for and the username. In order to save these info, you should manually create 3 fields in in Zendesk.
 
-In Zendesk go to Settings > User Fields and add 2 Multi-line text fields. Make sure the **Field keys** are exactly:
+In Zendesk go to Settings > User Fields and add the following fields. Make sure the **Field keys** are exactly:
 
-- `bought_themes`
-- `supported_themes`
-- `tf_username`
+- `bought_themes` (multiline text)
+- `supported_themes` (multiline text)
+- `tf_username` (text)
+- `country` (text)
 
 ### Requirements
 
