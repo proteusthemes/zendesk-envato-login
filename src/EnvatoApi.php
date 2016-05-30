@@ -210,7 +210,7 @@ class EnvatoApi  {
 	private function get_short_item_name( $long_name ) {
 		$name = strtok( $long_name, ' ' );
 
-		if ( stripos( $long_name, 'html' ) || stripos( $long_name, 'template' ) ) {
+		if ( ! stripos( $long_name, 'wordpress' ) && ( stripos( $long_name, 'html' ) || stripos( $long_name, 'template' ) ) ) {
 			$name .= ' HTML';
 		}
 

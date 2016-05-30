@@ -47,6 +47,14 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 						},
 						"supported_until": null,
 						"code": "ggg41155-fff0-ffff-ffff-000ee0686786"
+					}, {
+						"sold_at": "2016-05-01T12:00:00+11:00",
+						"item": {
+							"id": 15194530,
+							"name": "Auto - Ideal Car Mechanic and Auto Repair Template for WordPress"
+						},
+						"supported_until": null,
+						"code": "gag41155-fff0-ffff-ffff-000ee0686786"
 					}]
 				}'
 			),
@@ -115,7 +123,8 @@ class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 		$expected = "Hairpress HTML (11 Feb 2014)
 HairPress (28 Feb 2015)
 Beauty (29 Feb 2016)
-Readable HTML (1 May 2015)";
+Readable HTML (1 May 2015)
+Auto (1 May 2016)";
 		$actual = $envatoApi->get_bought_items_string();
 
 		$this->assertEquals( $expected, $actual );
