@@ -130,7 +130,6 @@ class EnvatoApi  {
 
 				$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
 
-				return $this->get_cached_data( $endpoint );
 			}
 			catch ( RequestException $e ) {
 				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
@@ -144,6 +143,7 @@ class EnvatoApi  {
 
 		}
 
+		return $this->get_cached_data( $endpoint );
 	}
 
 	public function get_email() {
