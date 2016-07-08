@@ -83,7 +83,18 @@ else {
 	];
 
 	if ( $EnvatoApi->get_number_of_errors() > 0 ) {
-		die( 'Yikes! Something went wrong with the Envato API, we were unable to sign you up. Till we resolve the issue, you can write directly to our support email (please include the purchase code): <code><strong>support@proteusthemes.zendesk.com</strong></code>.' );
+		die( '
+		<html>
+		<head>
+			<meta charset="utf-8">
+			<title>Error on Envato API</title>
+		</head>
+		<body style="background-color: #eee; color: #777; font-family: sans-serif; padding-top: 100px; line-height: 1.5;">
+			<div style="background-color: #fff; width: 500px; margin: 0 auto; border: 1px solid #ccc; padding: 30px 60px;">
+				<p>Yikes! Something went wrong with the Envato API, we were unable to sign you up. Till we resolve the issue, you can write directly to our support email (please include the purchase code): <strong>support@proteusthemes.zendesk.com</strong></p>
+			</div>
+		</body>
+		</html>' );
 	}
 
 	$jwt = JWT::encode( $token, $key );

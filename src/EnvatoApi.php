@@ -127,7 +127,12 @@ class EnvatoApi  {
 						'Authorization' => sprintf( 'Bearer %s', $this->access_token ),
 					],
 				] );
-			} catch ( RequestException $e ) {
+
+				$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
+
+				return $this->get_cached_data( $endpoint );
+			}
+			catch ( RequestException $e ) {
 				$msg = sprintf( 'Error when doing GET to Envato API: %s', $e->getMessage() );
 
 				if ( $this->logger ) {
@@ -137,10 +142,8 @@ class EnvatoApi  {
 				$this->increase_err_counter();
 			}
 
-			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
 		}
 
-		return $this->get_cached_data( $endpoint );
 	}
 
 	public function get_email() {
