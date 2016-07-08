@@ -139,4 +139,20 @@ Auto (1 May 2016)";
 
 		$this->assertEquals( $expected, $actual );
 	}
+
+	public function testErrorsCounter() {
+		$mock = new MockHandler([
+			new RequestException( 'Error Communicating with Server', new Request('GET', 'test') ),
+		]);
+
+		$handler   = HandlerStack::create( $mock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$expected = 1;
+
+		$envatoApi->authorize( 'some code' );
+		$actual = $envatoApi->get_number_of_errors();
+
+		$this->assertEquals( $expected, $actual );
+	}
 }

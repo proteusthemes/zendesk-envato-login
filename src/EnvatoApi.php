@@ -65,7 +65,20 @@ class EnvatoApi  {
 					'client_secret' => getenv( 'ENVATO_CLIENT_SECRET' ),
 				]
 			] );
-		} catch ( RequestException $e ) {
+
+			$envato_credentials = $this->decode_response( $response );
+
+			$this->set_access_token( $envato_credentials->access_token );
+
+			if ( $this->logger ) {
+				$this->logger->addInfo( sprintf( 'New user logged in to Zendesk: %s (%s).', $this->get_name(), $this->get_username() ) );
+			}
+
+			if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
+				print_r( $envato_credentials );
+			}
+		}
+		catch ( RequestException $e ) {
 			$msg = sprintf( 'Error when authorizing: %s', $e->getMessage() );
 
 			if ( $this->logger ) {
@@ -73,18 +86,6 @@ class EnvatoApi  {
 			}
 
 			$this->increase_err_counter();
-		}
-
-		$envato_credentials = $this->decode_response( $response );
-
-		$this->set_access_token( $envato_credentials->access_token );
-
-		if ( $this->logger ) {
-			$this->logger->addInfo( sprintf( 'New user logged in to Zendesk: %s (%s).', $this->get_name(), $this->get_username() ) );
-		}
-
-		if ( 'true' === getenv( 'ZEL_DEBUG' ) ) {
-			print_r( $envato_credentials );
 		}
 	}
 
