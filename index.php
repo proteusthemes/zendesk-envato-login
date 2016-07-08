@@ -82,6 +82,10 @@ else {
 		],
 	];
 
+	if ( $EnvatoApi->get_number_of_errors() > 0 ) {
+		die( 'Yikes! Something went wrong with the Envato API, we were unable to sign you up. Till we resolve the issue, you can write directly to our support email (please include the purchase code): <code><strong>support@proteusthemes.zendesk.com</strong></code>.' );
+	}
+
 	$jwt = JWT::encode( $token, $key );
 	$location = sprintf( 'https://%s.zendesk.com/access/jwt?jwt=%s', $config['zendesk_subdomain'], $jwt );
 

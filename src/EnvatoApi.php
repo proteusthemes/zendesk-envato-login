@@ -26,12 +26,20 @@ class EnvatoApi  {
 	protected $cached_data = [];
 
 	/**
+	 * Counter of errors
+	 * @var int
+	 */
+	protected $err_counter;
+
+	/**
 	 * Array of cached data
 	 * @var \Monolog\Logger
 	 */
 	protected $logger;
 
 	public function __construct( \GuzzleHttp\HandlerStack $handler = null ) {
+		$this->err_counter = 0;
+
 		$this->client = new Client( [
 			'base_uri' => 'https://api.envato.com/',
 			'handler'  => $handler,
@@ -64,7 +72,7 @@ class EnvatoApi  {
 				$this->logger->addCritical( $msg, $e->getHandlerContext() );
 			}
 
-			echo $msg;
+			$this->increase_err_counter();
 		}
 
 		$envato_credentials = $this->decode_response( $response );
@@ -125,7 +133,7 @@ class EnvatoApi  {
 					$this->logger->addCritical( $msg, $e->getHandlerContext() );
 				}
 
-				echo $msg;
+				$this->increase_err_counter();
 			}
 
 			$this->set_cached_data( $endpoint, $this->decode_response( $response ) );
@@ -215,5 +223,15 @@ class EnvatoApi  {
 		}
 
 		return $name;
+	}
+
+	private function increase_err_counter() {
+		$this->err_counter++;
+
+		return $this->err_counter;
+	}
+
+	public function get_number_of_errors() {
+		return $this->err_counter;
 	}
 }
