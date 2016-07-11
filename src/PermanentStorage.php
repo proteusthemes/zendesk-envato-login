@@ -1,5 +1,7 @@
 <?php
 
+namespace ProteusThemes\ZEL;
+
 /**
 * Wrapper for the Firebase API
 */

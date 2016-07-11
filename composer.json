@@ -14,5 +14,8 @@
         "vlucas/phpdotenv": "^2.2",
         "monolog/monolog": "^1.17",
         "ktamas77/firebase-php": "^2.2"
+    },
+    "autoload": {
+        "psr-4": { "ProteusThemes\\ZEL\\": "src/" }
     }
 }

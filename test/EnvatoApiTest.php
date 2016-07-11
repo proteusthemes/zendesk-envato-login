@@ -6,6 +6,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use ProteusThemes\ZEL\EnvatoApi;
 
 class EnvatoApiTest extends PHPUnit_Framework_TestCase {
 	protected $itemsMock;
