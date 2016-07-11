@@ -1,9 +1,6 @@
 <?php
 use Firebase\JWT\JWT;
-use Monolog\Logger;
-use Monolog\Handler\SlackHandler;
-use Monolog\Handler\RotatingFileHandler;
-use ProteusThemes\ZEL\EnvatoApi;
+use ProteusThemes\ZEL\PermanentStorage;
 
 require_once 'bootstrap.php';
 
@@ -67,8 +64,10 @@ else {
 	if ( IS_USING_PERMANENT_STORAGE ) {
 		$firebase = $firebase = new \Firebase\FirebaseLib( getenv( 'ZEL_FIREBASE_URL' ), getenv( 'ZEL_FIREBASE_TOKEN' ) );
 
-		$permanentStorage = new \ProteusThemes\ZEL\PermanentStorage( $firebase );
+		$permanentStorage = new PermanentStorage( $firebase );
 		$permanentStorage->set_logger( $logger );
+
+		$permanentStorage->set( [ 'email' => 'HelloWorld@primozcigler.net' ] );
 	}
 
 	// Redirect

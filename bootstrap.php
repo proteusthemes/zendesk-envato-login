@@ -1,11 +1,13 @@
 <?php
+use ProteusThemes\ZEL\EnvatoApi;
+use Monolog\Logger;
+use Monolog\Handler\SlackHandler;
+use Monolog\Handler\RotatingFileHandler;
 
 require_once 'vendor/autoload.php';
 
 // sesstion needed for storing variables between redirects and user authorization
 session_start();
-
-require_once 'bootstrap/autoload.php';
 
 $dotenv = new Dotenv\Dotenv( __DIR__ );
 $dotenv->load();

@@ -21,7 +21,21 @@ class PermanentStorage  {
 		$this->client = $firebase_instance;
 	}
 
-	public function set_logger() {
+	public function set_logger( \Monolog\Logger $logger ) {
 		$this->logger = $logger;
+	}
+
+	public function set( array $payload ) {
+		try {
+			$dateTime = new \DateTime();
+			$this->client->set( '/firebase/login_data/' . $dateTime->format( 'c' ), $payload );
+		}
+		catch ( Exception $e ) {
+			$msg = sprintf( 'Error when sending data to Firebase: %s', $e->getMessage() );
+
+			if ( $this->logger ) {
+				$this->logger->addCritical( $msg );
+			}
+		}
 	}
 }
