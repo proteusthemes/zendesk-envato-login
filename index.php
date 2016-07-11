@@ -1,54 +1,8 @@
 <?php
+use Firebase\JWT\JWT;
+use ProteusThemes\ZEL\PermanentStorage;
 
-// sesstion needed for storing variables between redirects and user authorization
-session_start();
-
-require_once 'vendor/autoload.php';
-require_once 'src/EnvatoApi.php';
-
-use \Firebase\JWT\JWT;
-use \Monolog\Logger;
-use \Monolog\Handler\SlackHandler;
-use \Monolog\Handler\RotatingFileHandler;
-
-$dotenv = new Dotenv\Dotenv(__DIR__);
-$dotenv->load();
-$dotenv->required( [
-	'ENVATO_CLIENT_ID',
-	'ENVATO_REDIRECT_URI',
-	'ENVATO_CLIENT_SECRET',
-	'ZENDESK_SHARED_SECRET',
-	'ZENDESK_SUBDOMAIN',
-] );
-
-/**
- * Config, from .env
- */
-$config = [
-	'envato_client_id'      => getenv( 'ENVATO_CLIENT_ID' ),
-	'envato_redirect_uri'   => getenv( 'ENVATO_REDIRECT_URI' ),
-	'zendesk_shared_secret' => getenv( 'ZENDESK_SHARED_SECRET' ),
-	'zendesk_subdomain'     => getenv( 'ZENDESK_SUBDOMAIN' ),
-	'slack_token'           => getenv( 'SLACK_TOKEN' ),
-	'slack_channel'         => getenv( 'SLACK_CHANNEL' ),
-];
-
-/**
- * Logger
- */
-$logger = new Logger( 'general' );
-$logger->pushHandler( new RotatingFileHandler( __DIR__ . '/logs/log', 7, Logger::DEBUG ) );
-
-if ( $config['slack_token'] ) {
-	$logger->pushHandler( new SlackHandler( $config['slack_token'], $config['slack_channel'], 'Zendesk-Envato Login', true, ':helmet_with_white_cross:', Logger::ERROR ) );
-}
-
-/**
- * EnvatoApi instance
- * @var EnvatoApi
- */
-$EnvatoApi = new EnvatoApi();
-$EnvatoApi->set_logger( $logger );
+require_once 'bootstrap.php';
 
 $envato_code = filter_input( INPUT_GET, 'code' );
 
@@ -104,6 +58,22 @@ else {
 
 	if( ! empty( $_SESSION['zendesk_return_to'] ) ) {
 		$location .= sprintf( '&return_to=%s', urlencode( $_SESSION['zendesk_return_to'] ) );
+	}
+
+	// Permanent storage
+	if ( IS_USING_PERMANENT_STORAGE ) {
+		$firebase = $firebase = new \Firebase\FirebaseLib( getenv( 'ZEL_FIREBASE_URL' ), getenv( 'ZEL_FIREBASE_TOKEN' ) );
+
+		$permanentStorage = new PermanentStorage( $firebase );
+		$permanentStorage->set_logger( $logger );
+
+		$permanentStorage->set( [
+			'name'          => $EnvatoApi->get_name(),
+			'email'         => $EnvatoApi->get_email(),
+			'country'       => $EnvatoApi->get_country(),
+			'tf_username'   => $EnvatoApi->get_username(),
+			'bought_themes' => $EnvatoApi->get_bought_items(),
+		] );
 	}
 
 	// Redirect

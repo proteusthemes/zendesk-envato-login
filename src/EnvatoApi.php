@@ -1,4 +1,5 @@
 <?php
+namespace ProteusThemes\ZEL;
 
 use \GuzzleHttp\Client;
 use \GuzzleHttp\Exception\RequestException;
@@ -166,7 +167,7 @@ class EnvatoApi  {
 		return $response->account->country;
 	}
 
-	private function get_bought_items() {
+	public function get_bought_items() {
 		if ( ! $this->is_cached( 'bought_items' ) ) {
 			$response = $this->get( '/v3/market/buyer/purchases' );
 
