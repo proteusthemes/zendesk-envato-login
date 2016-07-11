@@ -33,6 +33,8 @@ $config = [
 	'slack_channel'         => getenv( 'SLACK_CHANNEL' ),
 ];
 
+define( 'IS_USING_PERMANENT_STORAGE', ( ! empty( getenv( 'ZEL_FIREBASE_URL' ) ) && ! empty( getenv( 'ZEL_FIREBASE_TOKEN' ) ) ) );
+
 /**
  * Logger
  */
@@ -102,6 +104,14 @@ else {
 
 	if( ! empty( $_SESSION['zendesk_return_to'] ) ) {
 		$location .= sprintf( '&return_to=%s', urlencode( $_SESSION['zendesk_return_to'] ) );
+	}
+
+	// Permanent storage
+	if ( IS_USING_PERMANENT_STORAGE ) {
+		$firebase = $firebase = new \Firebase\FirebaseLib( getenv( 'ZEL_FIREBASE_URL' ), getenv( 'ZEL_FIREBASE_TOKEN' ) );
+
+		$permanentStorage = new \ProteusThemes\ZEL\PermanentStorage( $firebase );
+		$permanentStorage->set_logger( $logger );
 	}
 
 	// Redirect
