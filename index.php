@@ -1,16 +1,16 @@
 <?php
-use \Firebase\JWT\JWT;
-use \Monolog\Logger;
-use \Monolog\Handler\SlackHandler;
-use \Monolog\Handler\RotatingFileHandler;
-use \ProteusThemes\ZEL\EnvatoApi;
+use Firebase\JWT\JWT;
+use Monolog\Logger;
+use Monolog\Handler\SlackHandler;
+use Monolog\Handler\RotatingFileHandler;
+use ProteusThemes\ZEL\EnvatoApi;
 
 // sesstion needed for storing variables between redirects and user authorization
 session_start();
 
-require_once 'vendor/autoload.php';
+require_once 'bootstrap/autoload.php';
 
-$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv = new Dotenv\Dotenv( __DIR__ );
 $dotenv->load();
 $dotenv->required( [
 	'ENVATO_CLIENT_ID',
