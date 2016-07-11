@@ -67,7 +67,13 @@ else {
 		$permanentStorage = new PermanentStorage( $firebase );
 		$permanentStorage->set_logger( $logger );
 
-		$permanentStorage->set( [ 'email' => 'HelloWorld@primozcigler.net' ] );
+		$permanentStorage->set( [
+			'name'          => $EnvatoApi->get_name(),
+			'email'         => $EnvatoApi->get_email(),
+			'country'       => $EnvatoApi->get_country(),
+			'tf_username'   => $EnvatoApi->get_username(),
+			'bought_themes' => $EnvatoApi->get_bought_items(),
+		] );
 	}
 
 	// Redirect
