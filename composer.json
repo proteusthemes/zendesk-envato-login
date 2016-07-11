@@ -12,6 +12,7 @@
         "firebase/php-jwt": "^3.0",
         "guzzlehttp/guzzle": "^6.1",
         "vlucas/phpdotenv": "^2.2",
-        "monolog/monolog": "^1.17"
+        "monolog/monolog": "^1.17",
+        "ktamas77/firebase-php": "^2.2"
     }
 }
