@@ -1,15 +1,14 @@
 <?php
+use \Firebase\JWT\JWT;
+use \Monolog\Logger;
+use \Monolog\Handler\SlackHandler;
+use \Monolog\Handler\RotatingFileHandler;
 
 // sesstion needed for storing variables between redirects and user authorization
 session_start();
 
 require_once 'vendor/autoload.php';
 require_once 'src/EnvatoApi.php';
-
-use \Firebase\JWT\JWT;
-use \Monolog\Logger;
-use \Monolog\Handler\SlackHandler;
-use \Monolog\Handler\RotatingFileHandler;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
