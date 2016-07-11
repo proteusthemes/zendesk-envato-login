@@ -40,7 +40,7 @@ else {
 	];
 
 	if ( $EnvatoApi->get_number_of_errors() > 0 ) {
-		$logger->addInfo( 'Error screen shown when logging in.', [ 'number_of_errors' => $EnvatoApi->get_number_of_errors() ] );
+		$logger->addNotice( 'Error screen shown when logging in.', [ 'number_of_errors' => $EnvatoApi->get_number_of_errors() ] );
 
 		die( '
 		<html>
