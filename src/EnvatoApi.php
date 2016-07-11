@@ -32,7 +32,7 @@ class EnvatoApi  {
 	protected $err_counter;
 
 	/**
-	 * Array of cached data
+	 * Logger instance
 	 * @var \Monolog\Logger
 	 */
 	protected $logger;
