@@ -17,8 +17,16 @@ class PermanentStorage  {
 	 */
 	protected $logger;
 
+	/**
+	 * Path used for the db
+	 * @var string
+	 */
+	protected $db_path;
+
 	public function __construct( \Firebase\FirebaseLib $firebase_instance ) {
 		$this->client = $firebase_instance;
+
+		$this->db_path ='/tf_users/';
 	}
 
 	public function set_logger( \Monolog\Logger $logger ) {
@@ -26,15 +34,39 @@ class PermanentStorage  {
 	}
 
 	public function set( array $payload ) {
-		try {
+		if ( ! isset( $payload['datetime'] ) ) {
 			$dateTime = new \DateTime();
-			$this->client->set( '/firebase/login_data/' . $dateTime->format( 'c' ), $payload );
+			$payload['datetime'] = $dateTime->format( 'c' );
+		}
+
+		$payload['email'] = filter_var( $payload['email'], FILTER_SANITIZE_EMAIL );
+
+		$path = $this->db_path . $payload['tf_username'];
+
+		try {
+			$this->client->set( $path, $payload );
+			$this->log_login( $path . '/logins/' . $payload['datetime'], [
+				'datetime' => $payload['datetime']
+			] );
 		}
 		catch ( Exception $e ) {
 			$msg = sprintf( 'Error when sending data to Firebase: %s', $e->getMessage() );
 
 			if ( $this->logger ) {
-				$this->logger->addCritical( $msg );
+				$this->logger->addError( $msg );
+			}
+		}
+	}
+
+	private function log_login( $path, $payload ) {
+		try {
+			$this->client->set( $path, $payload );
+		}
+		catch ( Exception $e ) {
+			$msg = sprintf( 'Error when sending login logs to Firebase: %s', $e->getMessage() );
+
+			if ( $this->logger ) {
+				$this->logger->addError( $msg );
 			}
 		}
 	}
