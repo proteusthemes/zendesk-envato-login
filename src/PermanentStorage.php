@@ -34,7 +34,7 @@ class PermanentStorage  {
 	public function set( array $payload ) {
 		if ( ! isset( $payload['datetime'] ) ) {
 			$dateTime = new \DateTime();
-			$payload['datetime'] = $dateTime->format( 'c' );
+			$payload['last_updated'] = $dateTime->format( 'c' );
 		}
 
 		$payload['email'] = filter_var( $payload['email'], FILTER_SANITIZE_EMAIL );
@@ -43,8 +43,9 @@ class PermanentStorage  {
 
 		try {
 			$this->client->set( $path, $payload );
-			$this->log_login( $path . '/logins/' . $payload['datetime'], [
-				'datetime' => $payload['datetime']
+
+			$this->log_login( '/tf_logins/' . $payload['tf_username'], [
+				'datetime' => $payload['last_updated'],
 			] );
 		}
 		catch ( Exception $e ) {
@@ -58,7 +59,7 @@ class PermanentStorage  {
 
 	private function log_login( $path, $payload ) {
 		try {
-			$this->client->set( $path, $payload );
+			$this->client->push( $path, $payload );
 		}
 		catch ( Exception $e ) {
 			$msg = sprintf( 'Error when sending login logs to Firebase: %s', $e->getMessage() );
