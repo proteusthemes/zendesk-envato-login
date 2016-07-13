@@ -21,12 +21,10 @@ class PermanentStorage  {
 	 * Path used for the db
 	 * @var string
 	 */
-	protected $db_path;
+	const DB_PATH = '/tf_users/';
 
 	public function __construct( \Firebase\FirebaseLib $firebase_instance ) {
 		$this->client = $firebase_instance;
-
-		$this->db_path ='/tf_users/';
 	}
 
 	public function set_logger( \Monolog\Logger $logger ) {
@@ -41,7 +39,7 @@ class PermanentStorage  {
 
 		$payload['email'] = filter_var( $payload['email'], FILTER_SANITIZE_EMAIL );
 
-		$path = $this->db_path . $payload['tf_username'];
+		$path = self::DB_PATH . $payload['tf_username'];
 
 		try {
 			$this->client->set( $path, $payload );
