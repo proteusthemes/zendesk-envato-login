@@ -3,7 +3,7 @@ Zendesk login with Envato API
 
 [ ![Codeship Status for proteusthemes/zendesk-envato-login](https://codeship.com/projects/8c5f6860-bd22-0133-0fb0-4610616512f7/status?branch=master)](https://codeship.com/projects/136475)
 
-This project connects the [Zendesk single sign-on](https://support.zendesk.com/hc/en-us/articles/203663816-Setting-up-single-sign-on-with-JWT-JSON-Web-Token-) (SSO) with JSON Web Token (JWT) to [Envato API](). After implementing this, the users will be able to sign in to your Zendesk account only with their Envato accounts.
+This project connects the [Zendesk single sign-on](https://support.zendesk.com/hc/en-us/articles/203663816-Setting-up-single-sign-on-with-JWT-JSON-Web-Token-) (SSO) with JSON Web Token (JWT) to [Envato Market API](https://build.envato.com/). Your ThemeForest clients will be able to sign in to your Zendesk account using their Envato account.
 
 ### Setup
 
@@ -13,7 +13,7 @@ When you clone the repo, you should install dependencies with [composer](https:/
 $ composer install
 ```
 
-The configuration is loaded using the [dotenv](https://github.com/vlucas/phpdotenv). Copy the `.env.example` file to `.env` and enter your real credentials:
+The configuration is loaded using the [dotenv](https://github.com/vlucas/phpdotenv). Copy the `.env.example` file to `.env` and set your real credentials:
 
 - `ENVATO_CLIENT_ID`, `ENVATO_REDIRECT_URI`, `ENVATO_CLIENT_SECRET` *(required)* - you get these info when you [register the app](https://build.envato.com/my-apps/) on Envato API. Check [this picture](http://www.awesomescreenshot.com/image/1037426/ab483c503a64259dd8efe21b950a7aae) which permissions you need.
 
@@ -29,7 +29,7 @@ The configuration is loaded using the [dotenv](https://github.com/vlucas/phpdote
 
 - `SLACK_TOKEN`, `SLACK_CHANNEL` *(optional)* - token from [Slack](https://slack.com/) API and Slack channel where you'd like to get the notifications when something goes wrong (user unable to authenticate, Envato Market API is down etc.).
 
-  If not set, no Slack reminders will be send.
+  If not set, no Slack reminders will be sent.
 
 - `ZEL_FIREBASE_URL`, `ZEL_FIREBASE_TOKEN` *(optional)* - token and URL from [Firebase](https://firebase.google.com/) to save the login details in remote database.
 
