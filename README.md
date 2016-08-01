@@ -15,9 +15,25 @@ $ composer install
 
 The configuration is loaded using the [dotenv](https://github.com/vlucas/phpdotenv). Copy the `.env.example` file to `.env` and enter your real credentials:
 
-- `ENVATO_CLIENT_ID`, `ENVATO_REDIRECT_URI`, `ENVATO_CLIENT_SECRET` - you get these info when you [register the app](https://build.envato.com/my-apps/) on Envato API. Check [this picture](http://www.awesomescreenshot.com/image/1037426/ab483c503a64259dd8efe21b950a7aae) which permissions you need.
-- `ZENDESK_SHARED_SECRET`, `ZENDESK_SUBDOMAIN` - you get the shared secret in Zendesk Settings > Security > End-users > Single sign-on (SSO).
-- `ZEL_DEBUG` - aka *Zendesk-Envato login debug*. If this is set to `true`, no redirection will be made back to Zendesk, but some debugging information will be printed out instead.
+- `ENVATO_CLIENT_ID`, `ENVATO_REDIRECT_URI`, `ENVATO_CLIENT_SECRET` *(required)* - you get these info when you [register the app](https://build.envato.com/my-apps/) on Envato API. Check [this picture](http://www.awesomescreenshot.com/image/1037426/ab483c503a64259dd8efe21b950a7aae) which permissions you need.
+
+  Variables explained:
+
+  - `ENVATO_CLIENT_ID` *(required)* - the OAuth Client ID.
+  - `ENVATO_REDIRECT_URI` *(required)* - this should match the **Confirmation URL** in the Envato Market API app settings. It is the URL where you install this PHP script.
+  - `ENVATO_CLIENT_SECRET` *(required)* - the secret key you obtained from the Envato Market API.
+
+- `ZENDESK_SHARED_SECRET`, `ZENDESK_SUBDOMAIN` *(required)* - you get the shared secret in Zendesk Settings > Security > End-users > Single sign-on (SSO).
+
+- `ZEL_DEBUG` *(optional)* - aka *Zendesk-Envato login debug*. If this is set to `true`, no redirection will be made back to Zendesk, but some debugging information will be printed out instead.
+
+- `SLACK_TOKEN`, `SLACK_CHANNEL` *(optional)* - token from [Slack](https://slack.com/) API and Slack channel where you'd like to get the notifications when something goes wrong (user unable to authenticate, Envato Market API is down etc.).
+
+  If not set, no Slack reminders will be send.
+
+- `ZEL_FIREBASE_URL`, `ZEL_FIREBASE_TOKEN` *(optional)* - token and URL from [Firebase](https://firebase.google.com/) to save the login details in remote database.
+
+  If not set, no data will be written in remote database.
 
 Once configured, point your Zendesk login to the `index.php` file at root of this repo. This file will handle redirect to Envato API, obtain the credentials and redirect the logged in user back to Zendesk.
 
