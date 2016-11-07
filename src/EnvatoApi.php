@@ -239,4 +239,10 @@ class EnvatoApi  {
 	public function get_number_of_errors() {
 		return $this->err_counter;
 	}
+
+	public function user_has_supported_item() {
+		return array_reduce( $this->get_bought_items(), function ( $memo, $item ) {
+			return $memo || null !== $item['supported_until'];
+		}, false );
+	}
 }

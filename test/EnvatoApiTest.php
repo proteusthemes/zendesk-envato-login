@@ -155,4 +155,87 @@ Auto (1 May 2016)";
 
 		$this->assertEquals( $expected, $actual );
 	}
+
+	public function testUserHasSupportedItem() {
+		$handler   = HandlerStack::create( $this->itemsMock );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$actual = $envatoApi->user_has_supported_item();
+
+		$this->assertTrue( $actual );
+	}
+
+	public function testUserHasSupportedSingleItem() {
+		$handler = HandlerStack::create( new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{
+				"purchases": [{
+						"sold_at": "2014-02-12T05:33:01+11:00",
+						"item": {
+							"id": 3803346,
+							"name": "Hairpress - HTML Template for Hair Salons"
+						},
+						"supported_until": "2018-02-27T05:33:01+11:00",
+						"code": "ggg41153-fff0-ffff-ffff-111ee0686786"
+					}]
+				}'
+			),
+		] ) );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$actual = $envatoApi->user_has_supported_item();
+
+		$this->assertTrue( $actual );
+	}
+
+	public function testUserDoesntHaveSupportedSingleItem() {
+		$handler   = HandlerStack::create( new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{
+				"purchases": [{
+						"sold_at": "2014-02-12T05:33:01+11:00",
+						"item": {
+							"id": 3803346,
+							"name": "Hairpress - HTML Template for Hair Salons"
+						},
+						"supported_until": null,
+						"code": "ggg41153-fff0-ffff-ffff-111ee0686786"
+					}]
+				}'
+			),
+		] ) );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$actual = $envatoApi->user_has_supported_item();
+
+		$this->assertFalse( $actual );
+	}
+
+	public function testUserDoesntHaveSupportedMultipleItems() {
+		$handler   = HandlerStack::create( new MockHandler([
+			new Response( 200, ['content-type' => 'application/json'], '{
+				"purchases": [{
+						"sold_at": "2014-02-12T05:33:01+11:00",
+						"item": {
+							"id": 3803346,
+							"name": "Hairpress - HTML Template for Hair Salons"
+						},
+						"supported_until": null,
+						"code": "ggg41153-fff0-ffff-ffff-111ee0686786"
+					}, {
+						"sold_at": "2015-02-12T05:33:01+11:00",
+						"item": {
+							"id": 3803347,
+							"name": "Hairpress - HTML Template for Hair Salons"
+						},
+						"supported_until": null,
+						"code": "egg41153-fff0-ffff-ffff-111ee0686786"
+					}]
+				}'
+			),
+		] ) );
+		$envatoApi = new EnvatoApi( $handler );
+
+		$actual = $envatoApi->user_has_supported_item();
+
+		$this->assertFalse( $actual );
+	}
 }
