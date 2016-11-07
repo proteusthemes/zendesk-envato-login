@@ -36,6 +36,8 @@ else {
 		],
 	];
 
+	$templates = new League\Plates\Engine( 'src/templates' );
+
 	if ( $EnvatoApi->get_number_of_errors() > 0 ) {
 		$logger->addNotice( 'Error screen shown when logging in.', [ 'number_of_errors' => $EnvatoApi->get_number_of_errors() ] );
 		$html = <<<EOHTML

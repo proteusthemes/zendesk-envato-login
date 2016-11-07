@@ -13,7 +13,8 @@
         "guzzlehttp/guzzle": "^6.1",
         "vlucas/phpdotenv": "^2.2",
         "monolog/monolog": "^1.17",
-        "ktamas77/firebase-php": "^2.2"
+        "ktamas77/firebase-php": "^2.2",
+        "league/plates": "^3.1"
     },
     "autoload": {
         "psr-4": { "ProteusThemes\\ZEL\\": "src/" }
