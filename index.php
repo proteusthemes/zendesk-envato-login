@@ -39,34 +39,22 @@ else {
 	$templates = new League\Plates\Engine( 'src/templates' );
 
 	if ( $EnvatoApi->get_number_of_errors() > 0 ) {
-		$logger->addNotice( 'Error screen shown when logging in.', [ 'number_of_errors' => $EnvatoApi->get_number_of_errors() ] );
-		$html = <<<EOHTML
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Error on Envato API</title>
-</head>
-<body style="background-color: #eee; color: #777; font-family: sans-serif; padding-top: 100px; line-height: 1.5;">
-	<div style="background-color: #fff; width: 500px; margin: 0 auto; border: 1px solid #ccc; padding: 30px 60px;">
-		<p>Yikes! Something went wrong with the Envato API, we were unable to sign you up. Till we resolve the issue, you can write directly to our support email (please include the purchase code): <strong>support@proteusthemes.zendesk.com</strong></p>
-	</div>
+		$logger->addNotice( 'Error screen shown: Error on Envato API.', [ 'number_of_errors' => $EnvatoApi->get_number_of_errors() ] );
 
-	<script>
-		(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-		function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-		e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-		e.src='https://www.google-analytics.com/analytics.js';
-		r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-		ga('create','UA-33538073-25','auto',{'allowLinker':true});
-		ga('require','linker');
-		ga('linker:autoLink',['proteusthemes.com','themeforest.net']);
-		ga('send','pageview');
-	</script>
-</body>
-</html>
-EOHTML;
+		die( $templates->render( 'error', [
+			'title' => 'Error on Envato API',
+			'error_msg' => sprintf( 'Yikes! Something went wrong with the Envato API, we were unable to sign you up. Till we resolve the issue, you can write directly to our support email (please include the purchase code): <strong><a href="mailto:support@proteusthemes.zendesk.com">%1$s</a></strong>.', getenv( 'ZEL_SUPPORT_BACKUP' ) ),
+		] ) );
+	}
+	else if ( 'yes' === getenv( 'ZEL_RESTRICT_SUPPORT' ) && ! $EnvatoApi->user_has_supported_item() ) {
+		$logger->addNotice( 'Error screen shown: No supported themes.', [ 'username' => $token['user_fields']['tf_username'] ] );
 
-		die( $html );
+		die( $templates->render( 'error', [
+			'title'       => 'No supported themes found',
+			'error_msg'   => sprintf( 'We cannot find any supported themes associated with this Envato account. In order to get support you will have to login with Envato account you used to purchase the theme or extend the item support. <a href="https://support.proteusthemes.com/hc/en-us/articles/213572845">How can I do that?</a>
+						</p><p>
+						If you believe this is a mistake, you can still open a support request by writing to <a href="mailto:%1$s">%1$s</a>, but we will not answer if you don\'t provide the valid purchase code.', getenv( 'ZEL_SUPPORT_BACKUP' ) ),
+		] ) );
 	}
 
 	$jwt = JWT::encode( $token, $key );

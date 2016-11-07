@@ -48,6 +48,13 @@ In Zendesk go to Settings > User Fields and add the following fields. Make sure 
 - `tf_username` (text)
 - `country` (text)
 
+#### Restricting support login only to users with active licenses
+
+Two more config strings in `.env`:
+
+- `ZEL_RESTRICT_SUPPORT`: `yes` or `no`
+- `ZEL_SUPPORT_BACKUP`: your support email as a backup
+
 ### Requirements
 
 PHP 5.5+ with curl.
