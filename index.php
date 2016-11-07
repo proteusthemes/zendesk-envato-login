@@ -51,7 +51,7 @@ else {
 
 		die( $templates->render( 'error', [
 			'title'       => 'No supported themes found',
-			'error_msg'   => sprintf( 'We cannot find any supported themes associated with this Envato account. In order to get support you will have to login with Envato account you used to purchase the theme or extend the item support. <a href="https://support.proteusthemes.com/hc/en-us/articles/213572845">How can I do that?</a>
+			'error_msg'   => sprintf( 'We cannot find any supported themes associated with this Envato account. In order to get support you will have to login with the Envato account you used to purchase the theme or extend the item support. <a href="https://support.proteusthemes.com/hc/en-us/articles/213572845">How can I do that?</a>
 						</p><p>
 						If you believe this is a mistake, you can still open a support request by writing to <a href="mailto:%1$s">%1$s</a>, but we will not answer if you don\'t provide the valid purchase code.', getenv( 'ZEL_SUPPORT_BACKUP' ) ),
 		] ) );
